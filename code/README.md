@@ -31,6 +31,7 @@ After forking the project:
 
 Endpoints for Core Deliverables
 #GET /bots
+
 Example Response:
 
 [
