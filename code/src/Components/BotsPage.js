@@ -1,78 +1,49 @@
 import React from "react";
+import YourBotArmy from "./YourBotArmy";
+import BotCollection from "./BotCollection";
 
-const botTypeClasses = {
-  Assault: "icon military",
-  Defender: "icon shield",
-  Support: "icon plus circle",
-  Medic: "icon ambulance",
-  Witch: "icon magic",
-  Captain: "icon star",
-};
+function BotsPage({botCollection, setBotCollection, setCheckBotCollection}) {
+  
+  const [botBox, setBotBox] = React.useState([]) 
+  const addBot = (bot) => {
+    const botInBox = botBox.find((item) => {return (item.id === bot.id)});
+    if (!botInBox) {
+      setBotBox([...botBox, bot])
+    }
+  }
+ 
+  const remBot = (bot) =>{
+    const botInBox = botBox.find((item) => {return (item.id === bot.id)});
+    if (botInBox) {
+      setBotBox(botBox.filter((removedBot) => removedBot.id !== bot.id))
+    }
+  }
+  
+  const dischargeBot = (bot) => {
+    setBotCollection(botCollection.filter((item) => item.id !== bot.id));
+    remBot(bot)
+    fetch(`https://api.npoint.io/bee30eddc7544dac652c/bots/${bot.id}`, {
+      method: "DELETE", 
+      headers: {"Content-Type" : "application/json",},
+  }, 
 
-function BotSpecs({ bot }) {
+    );
+    setCheckBotCollection(true)
+  }
   return (
-    <div className="ui segment">
-      <div className="ui two column centered grid">
-        <div className="row">
-          <div className="four wide column">
-            <img
-              alt="oh no!"
-              className="ui medium circular image bordered"
-              src={bot.avatar_url}
-            />
-          </div>
-          <div className="four wide column">
-            <h2>Name: {bot.name}</h2>
-            <p>
-              <strong>Catchphrase: </strong>
-              {bot.catchphrase}
-            </p>
-            <strong>
-              Class: {bot.bot_class}
-              <i className={botTypeClasses[bot.bot_class]} />
-            </strong>
-            <br />
-            <div className="ui segment">
-              <div className="ui three column centered grid">
-                <div className="row">
-                  <div className="column">
-                    <i className="icon large circular red heartbeat" />
-                    <strong>{bot.health}</strong>
-                  </div>
-                  <div className="column">
-                    <i className="icon large circular yellow lightning" />
-                    <strong>{bot.damage}</strong>
-                  </div>
-                  <div className="column">
-                    <i className="icon large circular blue shield" />
-                    <strong>{bot.armor}</strong>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <button
-              className="ui button fluid"
-              onClick={() =>
-                console.log("connect this to a function that shows all bots")
-              }
-            >
-              Go Back
-            </button>
-            <button
-              className="ui button fluid"
-              onClick={() =>
-                console.log(
-                  "connect this to a function that adds this bot to your bot army list"
-                )
-              }
-            >
-              Enlist
-            </button>
-          </div>
-        </div>
-      </div>
+    <div>
+      <YourBotArmy 
+        botBox = {botBox}
+        remBot = {remBot}
+        dischargeBot={dischargeBot}
+      />
+      <BotCollection 
+        botCollection={botCollection}
+        addBot={addBot}
+        dischargeBot={dischargeBot}
+      />
     </div>
-  );
+  )
 }
 
-export default BotSpecs;
+export default BotsPage;
